@@ -18,16 +18,30 @@ fun Route.ProduceMessage() {
         val message = this.call.parameters["message"] ?: "no message! :("
 
         KafkaProducer<String, String>(getKafkaConfig()).use { producer ->
-            // Skriv inn koden for å videresende meldingen fra HTTP requesten og skrive denne til kafka kø her!
-            // Sluttresultat: Skrive JSON melding til kafka topic'en referert til i `nais/nais.yaml` som skal ha struktur:
-            // {
-            //      "id": string, // Unik ID for denne meldingen
-            //      "user": string, // github brukernavnet ditt
-            //      "namespace": string, // K8s namespacet appen din skal kjøre i (les: "sommerstudenter2021")
-            //      "message": string, // Innholdet/"body" av json-meldingen lagt på kafka køen - kommer fra GET endepunktet /produce/.
-            // }
-            // `id`, `user` og `namespace` er kun brukt for å unikt identifisere en melding.
-            // Kun `message` har "reell" nytte i dette eksempelet.
+            val topic = "omsorgspenger.sommerstudent-kafka"
+            val key = "kafka-skeleton"
+            val id = UUID.randomUUID().toString()
+
+            @Language("JSON")
+            val payload = """
+                    {
+                       "id":"$id",
+                       "user":"jessie-yue-guan",
+                       "namespace":"sommerstudenter2021",
+                       "message":"$message"
+                    }
+            """.trimIndent()
+            println("Producing record: $key\t$payload")
+
+            producer.send(ProducerRecord(topic, key, payload)) { m: RecordMetadata, e: Exception? ->
+                when (e) {
+                    null -> println("Produced record to topic ${m.topic()} partition [${m.partition()}] @ offset ${m.offset()}")
+                    else -> e.printStackTrace()
+                }
+            }
+
+            producer.flush()
+            producer.close()
         }
 
     }
