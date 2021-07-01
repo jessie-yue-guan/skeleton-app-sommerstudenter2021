@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: jessie-yue-guan
+  name: sommerstudenter2021-jessie-yue-guan
   namespace: sommerstudenter2021
   labels:
     team: sommerstudenter2021
@@ -25,7 +25,7 @@ spec:
       cpu: 100m
       memory: 128Mi
   ingresses:
-    - https://jessie-yue-guan.dev.intern.nav.no # Fyll inn metedata.name sin verdi her!
+    - https://sommerstudenter-jessie-yue-guan.dev.intern.nav.no # Fyll inn metedata.name sin verdi her!
   kafka:
     # Husk at dere må oppdatere (les: lage PR) her:
     # https://github.com/navikt/sommerstudent-daemon/blob/main/nais/topic-sommerstudent.yaml#L21
